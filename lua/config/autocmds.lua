@@ -1,7 +1,18 @@
+-- NOTE: most of the autocmds found in lazy.vim autocmds :
+-- https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
+--
+-- EXAMPLE: auto format on save.
+-- autocmd({ "BufWritePre" }, {
+--   group = augroup("auto_format"),
+--   callback = function()
+--     vim.lsp.buf.format()
+--   end,
+-- })
+-- NOTE: conform plugin provide more formatting configs.
+--
 local function augroup(name)
   return vim.api.nvim_create_augroup("vaz_" .. name, { clear = true })
 end
---
 local autocmd = vim.api.nvim_create_autocmd
 
 -- Turn off paste mode when leaving insert
@@ -12,7 +23,6 @@ autocmd("InsertLeave", {
 })
 
 -- Disable the concealing in some file formats
--- The default conceallevel is 3 in LazyVim
 autocmd("FileType", {
   group = augroup("json_concealing"),
   pattern = { "json", "jsonc", "markdown" },
@@ -132,13 +142,6 @@ autocmd({ "BufWritePre" }, {
     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
   end,
 })
-
--- autocmd({ "BufWritePre" }, {
---   group = augroup("auto_format"),
---   callback = function()
---     vim.lsp.buf.format()
---   end,
--- })
 
 autocmd({ "InsertLeave" }, {
   group = augroup("disable_snippet"),

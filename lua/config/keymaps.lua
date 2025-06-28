@@ -1,10 +1,8 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
 local keymap = vim.keymap
 local g = vim.g
 local opts = { noremap = true, silent = true }
 
+-- MAP <LEADER> TO <SPACEBAR>
 g.mapleader = " "
 
 -- Basic motion
@@ -89,4 +87,6 @@ end, {})
 keymap.set("n", "<leader>ch", ":InlayHint", { desc = "Toggle InlayHints" })
 
 -- Save with root permission
+-- NOTE: change pkexec to your system dialog or polkit
+-- sudo may need external dialogs too.
 vim.api.nvim_create_user_command("SaveAsRoot", "w !pkexec tee > /dev/null %:p", {})

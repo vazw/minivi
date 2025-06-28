@@ -1,5 +1,7 @@
+-- NOTE: High priority Plugins that need to load first will be here
+-- such LSP , treesister and blink cmp
 local now = MiniDeps.now
--- PLUGIN: treesister
+------------------------PLUGIN: treesister--------------------------------
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
   -- enable syntax highlighting
@@ -122,7 +124,7 @@ require("nvim-treesitter.configs").setup({
 })
 
 now(function()
-  -- PLUGIN: LSP
+  ------------------------PLUGIN: LSP --------------------------------
   local lsp_opts = {
     diagnostics = {
       underline = true,
@@ -463,7 +465,7 @@ now(function()
       end
     end
   end
-  -- PLUGIN: BLINK
+  ------------------------PLUGIN: BLINK --------------------------------
   require("blink.cmp").setup({
     -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
     -- 'super-tab' for mappings similar to vscode (tab to accept)

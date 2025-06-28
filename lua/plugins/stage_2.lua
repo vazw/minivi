@@ -1,12 +1,9 @@
+-- NOTE: Load Basic plugin such as mason,
+-- comform(formatter) and statusline will be here
 local add, later = MiniDeps.add, MiniDeps.later
 
 later(function()
-  add("stevearc/conform.nvim")
-  add("nvimdev/indentmini.nvim")
-
-  add({ source = "nvim-lualine/lualine.nvim", depends = { "echasnovski/mini.icons" } })
-  ---------------------------------------------------------------------
-  -- PLUGIN: mason
+  ------------------------PLUGIN: mason--------------------------------------
   local have_mason, mason = pcall(require, "mason")
   if have_mason then
     mason.setup({
@@ -68,7 +65,7 @@ later(function()
     end)
   end
 
-  -- PLUGIN: mini.icons
+  ------------------------PLUGIN: mini.icons-------------------------------
   local MiniIcons = require("mini.icons")
   MiniIcons.setup({
     file = {
@@ -82,7 +79,8 @@ later(function()
   MiniIcons.mock_nvim_web_devicons()
   MiniIcons.tweak_lsp_kind("replace")
 
-  -- PLUGIN: conform
+  add("stevearc/conform.nvim")
+  ------------------------PLUGIN: conform-------------------------------
   require("conform").setup({
     -- Define your formatters
     formatters_by_ft = {
@@ -145,10 +143,27 @@ later(function()
   })
   vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 
+  add("nvimdev/indentmini.nvim")
   require("indentmini").setup() -- use default config
   vim.cmd.highlight("IndentLine guifg=#303030")
   vim.cmd.highlight("IndentLineCurrent guifg=green")
 
+  add("wtfox/jellybeans.nvim")
+  ------------------------PLUGIN: colorscheme--------------------------------
+  require("jellybeans").setup({
+    on_highlights = function(hl, _)
+      hl.ColorColumn = { bg = "#252525" }
+    end,
+    on_colors = function(c)
+      local dark_bg = "#121214"
+      local light_bg = "#F3F3F4"
+      c.background = vim.o.background == "light" and light_bg or dark_bg
+    end,
+  })
+  vim.cmd("colorscheme jellybeans")
+
+  ------------------------PLUGIN: lualine--------------------------------
+  add({ source = "nvim-lualine/lualine.nvim", depends = { "echasnovski/mini.icons" } })
   require("lualine").setup({
     options = {
       icons_enabled = true,
@@ -247,25 +262,26 @@ later(function()
       },
     },
   })
-end)
 
-add({ source = "nvim-treesitter/nvim-treesitter-textobjects", depends = { "nvim-treesitter/nvim-treesitter" } })
-require("nvim-treesitter-textobjects")
-local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-local configs = require("nvim-treesitter.configs")
-for name, fn in pairs(move) do
-  if name:find("goto") == 1 then
-    move[name] = function(q, ...)
-      if vim.wo.diff then
-        local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-        for key, query in pairs(config or {}) do
-          if q == query and key:find("[%]%[][cC]") then
-            vim.cmd("normal! " .. key)
-            return
+  add({ source = "nvim-treesitter/nvim-treesitter-textobjects", depends = { "nvim-treesitter/nvim-treesitter" } })
+  ------------------------PLUGIN: textobjects--------------------------------
+  require("nvim-treesitter-textobjects")
+  local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
+  local configs = require("nvim-treesitter.configs")
+  for name, fn in pairs(move) do
+    if name:find("goto") == 1 then
+      move[name] = function(q, ...)
+        if vim.wo.diff then
+          local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
+          for key, query in pairs(config or {}) do
+            if q == query and key:find("[%]%[][cC]") then
+              vim.cmd("normal! " .. key)
+              return
+            end
           end
         end
+        return fn(q, ...)
       end
-      return fn(q, ...)
     end
   end
-end
+end)

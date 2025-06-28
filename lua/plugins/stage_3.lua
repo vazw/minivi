@@ -1,10 +1,12 @@
+-- NOTE: Load appearance such as Colorizer, Icons/Themes and Git things
+-- *OR* plugin that depend on filetype *OR* per projects
+--
 local add, later = MiniDeps.add, MiniDeps.later
 
 later(function()
   add("akinsho/bufferline.nvim")
   add("windwp/nvim-ts-autotag")
   add("windwp/nvim-autopairs")
-  add("wtfox/jellybeans.nvim")
   add("akinsho/toggleterm.nvim")
   add("ibhagwan/fzf-lua")
   add("folke/which-key.nvim")
@@ -47,18 +49,6 @@ later(function()
       enable_close_on_slash = false, -- Auto close on trailing </
     },
   })
-  -- PLUGIN: colorscheme
-  require("jellybeans").setup({
-    on_highlights = function(hl, _)
-      hl.ColorColumn = { bg = "#252525" }
-    end,
-    on_colors = function(c)
-      local dark_bg = "#121214"
-      local light_bg = "#F3F3F4"
-      c.background = vim.o.background == "light" and light_bg or dark_bg
-    end,
-  })
-  vim.cmd("colorscheme jellybeans")
 
   -- PLUGIN: toggleterm
   require("toggleterm").setup({

@@ -17,6 +17,7 @@ require("plugins.loader")
 -- ```
 require("plugins.stage_1")
 require("plugins.stage_2")
+-- Ensure latest
 require("plugins.stage_3")
 
 --- Startup times for process: Embedded ---
