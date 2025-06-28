@@ -3,13 +3,14 @@ vim.g.loaded_gzip = 1
 vim.g.loaded_tarPlugin = 1
 vim.g.loaded_tutor_mode_plugin = 1
 vim.g.loaded_2html_plugin = 1
-vim.g.loaded_ruby_provider = 1
-vim.g.loaded_node_provider = 1
-vim.g.loaded_perl_provider = 1
-vim.g.loaded_python3_provider = 1
 -- # DISABLE netrwPlugin
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1
+-- # DISABLE vim.provider?
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
 
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"

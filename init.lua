@@ -16,30 +16,26 @@ require("plugins.loader")
 -- require("plugins.stage_3")
 -- ```
 require("plugins.stage_1")
-require("plugins.stage_2")
--- Ensure latest
-require("plugins.stage_3")
-
+-- Load it later
+MiniDeps.later(function()
+  require("plugins.stage_2")
+  require("plugins.stage_3")
+end)
 --- Startup times for process: Embedded ---
 -- times in msec
 --
--- 000.001  000.001: --- NVIM STARTING ---
--- 000.144  000.144: event init
+-- 000.000  000.000: --- NVIM STARTING ---
+-- .....
+-- 005.325  001.025  000.032: require('config')
 -- .....
 -- .....
--- 022.423  016.826  000.378: require('plugins.loader')
+-- 031.707  010.789  007.101: require('plugins.stage_1')
+-- 032.008  000.298  000.298: require('plugins.stage_2')
+-- 033.117  001.106  001.106: require('plugins.stage_3')
+-- 033.121  028.837  000.035: sourcing /home/vaz/.config/nvim/init.lua
+-- 033.131  000.411: sourcing vimrc file(s)
 -- .....
 -- .....
--- 034.140  011.715  007.955: require('plugins.stage_1')
--- .....
--- .....
--- 040.565  006.421  001.088: require('plugins.stage_2')
--- 040.820  000.255  000.255: require('plugins.stage_3')
--- 040.822  036.415  000.038: sourcing /home/vaz/.config/nvim/init.lua
--- 040.828  000.465: sourcing vimrc file(s)
--- .....
--- .....
--- .....
--- 056.981  000.077: before starting main loop
--- 057.425  000.444: first screen update
--- 057.427  000.002: --- NVIM STARTED ---
+-- 050.759  000.086: before starting main loop
+-- 051.704  000.945: first screen update
+-- 051.707  000.003: --- NVIM STARTED ---
