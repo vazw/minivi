@@ -16,17 +16,17 @@ vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
 vim.wo.number = true
 
-vim.g.netrw_preview = 1
-vim.g.netrw_liststyle = 3
-vim.g.netrw_winsize = 30
-vim.g.netrw_bufsettings = "noma nomod nu nobl nowrap ro nornu"
-
 vim.opt.title = true
 vim.opt.hlsearch = true
 vim.opt.backup = false
 vim.opt.showcmd = true
 vim.opt.cmdheight = 1
-vim.opt.laststatus = 3
+  -- 'laststatus' = 0	never a status line
+  -- 'laststatus' = 1	status line if there is more than one window
+  -- 'laststatus' = 2	always a status line
+  -- 'laststatus' = 3	have a global statusline at the bottom instead
+  -- 			of one for each window
+vim.opt.laststatus = 2
 vim.opt.scrolloff = 5
 vim.opt.shell = "bash"
 vim.opt.relativenumber = true
@@ -60,8 +60,8 @@ vim.opt.undofile = true
 -- indent
 vim.opt.expandtab = true
 vim.opt.smartindent = true
-vim.opt.tabstop = 8
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 2
 vim.opt.softtabstop = 0
 vim.opt.indentexpr = "on"
 vim.opt.smarttab = true
@@ -72,7 +72,7 @@ vim.opt.formatoptions:append({ "r" })
 
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
-vim.opt.whichwrap:append("<>[]hl")
+vim.opt.whichwrap:append("<,>,[,]")
 
 -- use mouse click but disable when typing
 vim.opt.mouse = "nvch"

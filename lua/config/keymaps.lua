@@ -56,7 +56,7 @@ keymap.set("n", "<leader>O", "O<ESC>", { silent = true, desc = "Create New Line 
 
 keymap.set({ "n", "v" }, "<leader>x", "<ESC>:q<CR>", { desc = "Close" })
 
-keymap.set("n", "<leader>cw", "<cmd>lcd %:p:h <CR>:cd ..<CR>", { desc = "Set local working Dir" })
+keymap.set("n", "<leader>cw", "<cmd>lcd %:p:h <CR>", { desc = "Set local working Dir" })
 keymap.set("n", "<leader>cW", "<cmd>cd %:p:h <CR>", { desc = "Set as working Dir" })
 
 -- Move Lines
@@ -84,9 +84,35 @@ vim.api.nvim_create_user_command("Format", ":lua vim.lsp.buf.format()", { desc =
 vim.api.nvim_create_user_command("InlayHint", function()
   vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
 end, {})
-keymap.set("n", "<leader>ch", ":InlayHint", { desc = "Toggle InlayHints" })
+keymap.set("n", "<leader>ch", ":InlayHint<CR>", { desc = "Toggle InlayHints" })
 
 -- Save with root permission
 -- NOTE: change pkexec to your system dialog or polkit
 -- sudo may need external dialogs too.
 vim.api.nvim_create_user_command("SaveAsRoot", "w !pkexec tee > /dev/null %:p", {})
+
+-- LSP
+vim.keymap.set("n", "gD", function()
+  vim.lsp.buf.declaration()
+end, { desc = "Go To Declaration" })
+
+vim.keymap.set("n", "gd", function()
+  vim.lsp.buf.definition()
+end, { desc = "Go To Definition" })
+
+vim.keymap.set("n", "K", function()
+  vim.lsp.buf.hover()
+end, { desc = "Lsp Hover" })
+
+vim.keymap.set("n", "<c-k>", function()
+  vim.diagnostic.open_float()
+end, { desc = "Diagnostic" })
+
+keymap.set({ "n" }, "<c-/>", ":ToggleTerminal<CR>")
+keymap.set({ "t" }, "<c-/>", "<c-\\><c-n>:ToggleTerminal<CR>")
+
+local tmux = vim.fn.getenv("TMUX")
+if tmux ~= nil then
+  keymap.set({ "n" }, "<c-_>", ":ToggleTerminal<CR>")
+  keymap.set({ "t" }, "<c-_>", "<c-\\><c-n>:ToggleTerminal<CR>")
+end
