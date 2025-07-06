@@ -1,6 +1,6 @@
 -- NOTE: High priority Plugins that need to load first will be here
 -- such LSP , treesister and blink cmp
-local now = MiniDeps.now
+local now, later = MiniDeps.now, MiniDeps.later
 ------------------------PLUGIN: treesister--------------------------------
 local ok, ts_config = pcall(require, "nvim-treesitter.configs")
 if ok then
@@ -37,6 +37,74 @@ if ok then
       },
     },
   })
+end
+
+local function mason_setup() ------------------------PLUGIN: mason--------------------------------------
+  local have_mason, mason = pcall(require, "mason")
+  if have_mason then
+    mason.setup({
+      ui = {
+        icons = {
+          package_installed = "✓",
+          package_pending = "➜",
+          package_uninstalled = "✗",
+        },
+      },
+    })
+    local mr = require("mason-registry")
+    mr:on("package:install:success", function()
+      vim.defer_fn(function()
+        vim.api.nvim_exec_autocmds("FileType", {
+          buffer = vim.api.nvim_get_current_buf(),
+          modeline = false,
+        })
+      end, 100)
+    end)
+
+    local has_mason_path = vim.fn.stdpath("data") .. "/mason.install"
+    local ensure_installed = {} ---@type string[]
+    if not vim.uv.fs_stat(has_mason_path) then
+      ensure_installed = {
+        "black",
+        "stylua",
+        "prettierd",
+        "isort",
+        "typescript-language-server",
+        "shfmt",
+        "markdown-toc",
+        "marksman",
+        "bacon",
+        "bacon-ls",
+        "black",
+        "isort",
+        "lua-language-server",
+        "pyright",
+        "ruff",
+        "tailwindcss-language-server",
+        "tinymist",
+        "typos-lsp",
+        "prettypst",
+        "clangd",
+        -- "clang-format",
+      }
+      vim.fn.system({ "touch", has_mason_path })
+    end
+    mr.refresh(function()
+      for _, tool in ipairs(ensure_installed) do
+        local p = mr.get_package(tool)
+        if not p:is_installed() then
+          p:install()
+        end
+      end
+    end)
+  end
+end
+
+local path = vim.fn.environ()["PATH"]
+if string.match(path, "mason") then
+  later(mason_setup)
+else 
+  now(mason_setup)
 end
 
 now(function()
@@ -135,18 +203,18 @@ now(function()
 
           --- NOTE: All of these options may be functions to get dynamic behavior
           --- See the type definitions for more information
-          enabled = true, -- Whether or not to enable the provider
-          async = true, -- Whether we should show the completions before this provider returns, without waiting for it
-          timeout_ms = 2000, -- How long to wait for the provider to return before showing completions and treating it as asynchronous
-          transform_items = nil, -- Function to transform the items before they're returned
+          enabled = true,           -- Whether or not to enable the provider
+          async = true,             -- Whether we should show the completions before this provider returns, without waiting for it
+          timeout_ms = 2000,        -- How long to wait for the provider to return before showing completions and treating it as asynchronous
+          transform_items = nil,    -- Function to transform the items before they're returned
           should_show_items = true, -- Whether or not to show the items
-          max_items = nil, -- Maximum number of items to display in the menu
-          min_keyword_length = 0, -- Minimum number of characters in the keyword to trigger the provider
+          max_items = nil,          -- Maximum number of items to display in the menu
+          min_keyword_length = 0,   -- Minimum number of characters in the keyword to trigger the provider
           -- If this provider returns 0 items, it will fallback to these providers.
           -- If multiple providers fallback to the same provider, all of the providers must return 0 items for it to fallback
           fallbacks = { "buffer" },
           score_offset = 99, -- Boost/penalize the score of the items
-          override = nil, -- Override the source's functions
+          override = nil,    -- Override the source's functions
         },
       },
     },
@@ -167,6 +235,7 @@ now(function()
       },
     },
   })
+
   ------------------------PLUGIN: LSP --------------------------------
   local lsp_opts = {
     diagnostics = {
@@ -472,10 +541,10 @@ now(function()
     {},
     vim.lsp.protocol.make_client_capabilities(),
     has_blink and blink.get_lsp_capabilities()
-      --  has_blink and blink.get_lsp_capabilities({
-      --   textDocument = { completion = { completionItem = { snippetSupport = false } } },
-      -- })
-      or {},
+    --  has_blink and blink.get_lsp_capabilities({
+    --   textDocument = { completion = { completionItem = { snippetSupport = false } } },
+    -- })
+    or {},
     lsp_opts.capabilities or {}
   )
 
