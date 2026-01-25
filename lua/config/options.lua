@@ -11,6 +11,7 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
+vim.g.omni_sql_default_compl_type = 'syntax'
 
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
@@ -54,14 +55,17 @@ vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
 -- undo
-vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+vim.opt.undodir = os.getenv("HOME") .. "/.local/share/nvim/undodir"
 vim.opt.undofile = true
+
+-- swapfile
+vim.opt.swapfile = false
 
 -- indent
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
-vim.opt.shiftwidth = 2
+vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 0
 vim.opt.indentexpr = "on"
 vim.opt.smarttab = true
@@ -70,9 +74,9 @@ vim.opt.breakindent = true
 -- Add asterisks in block comments
 vim.opt.formatoptions:append({ "r" })
 
--- go to previous/next line with h,l,left arrow and right arrow
+-- go to previous/next line with left arrow and right arrow
 -- when cursor reaches end/beginning of line
-vim.opt.whichwrap:append("<,>,[,]")
+vim.opt.whichwrap:append("<>[]")
 
 -- use mouse click but disable when typing
 vim.opt.mouse = "nvch"

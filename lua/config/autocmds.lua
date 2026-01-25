@@ -15,6 +15,8 @@ local function augroup(name)
 end
 local autocmd = vim.api.nvim_create_autocmd
 
+local next = next 
+
 -- Turn off paste mode when leaving insert
 autocmd("InsertLeave", {
   group = augroup("insert_leave"),
@@ -128,6 +130,26 @@ autocmd("FileType", {
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
+  end,
+})
+
+local function clear_lsp()
+    local to_stop = {}
+    for _, client in ipairs(vim.lsp.get_clients()) do
+      local lsp_attached = next(client.attached_buffers)
+      if lsp_attached == nil then
+        table.insert(to_stop, client)
+        -- vim.print("to stop: " .. client.name)
+      end
+    end
+    -- vim.print("To stop LSP: " .. vim.inspect(to_stop))
+    vim.lsp.stop_client(to_stop, true)
+end
+
+autocmd("BufDelete", {
+  group = augroup("clear_lsp"),
+  callback = function()
+    vim.defer_fn(clear_lsp, 2000)
   end,
 })
 

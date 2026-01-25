@@ -54,7 +54,7 @@ keymap.set("n", "fe", "<cmd>Lexplore<CR>", { silent = true, desc = "netrw Lexplo
 keymap.set("n", "<leader>o", "o<ESC>", { silent = true, desc = "Create New Line Below" })
 keymap.set("n", "<leader>O", "O<ESC>", { silent = true, desc = "Create New Line Above" })
 
-keymap.set({ "n", "v" }, "<leader>x", "<ESC>:q<CR>", { desc = "Close" })
+keymap.set({ "n", "v" }, "<leader>x", "<ESC>:bdelete<CR>", { desc = "Close" })
 
 keymap.set("n", "<leader>cw", "<cmd>lcd %:p:h <CR>", { desc = "Set local working Dir" })
 keymap.set("n", "<leader>cW", "<cmd>cd %:p:h <CR>", { desc = "Set as working Dir" })
@@ -72,7 +72,7 @@ keymap.set("n", "<C-c>", ":norm gcc<CR>", opts)
 keymap.set({ "x", "o" }, "<C-c>", "gc", { remap = true })
 
 -- Macro norm!
-keymap.set("v", "m", ":norm! _", { desc = "norm!" })
+-- keymap.set("v", "m", ":norm! _", { desc = "norm!" })
 
 -- better indenting
 keymap.set("v", "<", "<gv")
@@ -110,6 +110,8 @@ end, { desc = "Diagnostic" })
 
 keymap.set({ "n" }, "<c-/>", ":ToggleTerminal<CR>")
 keymap.set({ "t" }, "<c-/>", "<c-\\><c-n>:ToggleTerminal<CR>")
+
+keymap.set("n", "<leader>co", ":copen<cr>", {desc="copen after make"})
 
 local tmux = vim.fn.getenv("TMUX")
 if tmux ~= nil then

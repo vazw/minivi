@@ -10,7 +10,7 @@ s.current = {
 
 s.config = {
   direction = "bottom",
-  size = 0.25,
+  size = 0.3,
 }
 
 function M.setup(opts)

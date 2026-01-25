@@ -110,7 +110,7 @@ return {
     },
     vtsls = { enabled = false },
     bacon_ls = {
-      enabled = true,
+      enabled = false,
       init_options = {
         updateOnSave = true,
         updateOnSaveWaitMillis = 1000,
@@ -134,14 +134,14 @@ return {
             command = "clippy",
             extraArgs = {
               "--no-deps",
-              "--workspace",
+              -- "--workspace",
               "--tests",
-              "--all-targets",
-              "--all-features",
+              -- "--all-targets",
+              -- "--all-features",
             },
           },
-          checkOnSave = false,
-          diagnostics = { enable = false },
+          checkOnSave = true,
+          diagnostics = { enable = true },
           procMacro = {
             enable = true,
             ignored = {
@@ -227,11 +227,13 @@ return {
       },
     },
     typos_lsp = {
-      -- autostart = false,
+      autostart = false,
       init_options = {
         config = "~/.config/typos.toml",
       },
     },
+
+    bashls = {},
 
     lua_ls = {
       enabled = true,
