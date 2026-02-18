@@ -148,7 +148,7 @@ return {
               ["async-trait"] = { "async_trait" },
               ["napi-derive"] = { "napi" },
               ["async-recursion"] = { "async_recursion" },
-              leptos = { "server", "component" },
+              leptos_macro = { "server", "component" },
             },
           },
           files = {
@@ -221,7 +221,7 @@ return {
 
     tinymist = {
       single_file_support = true,
-      filetypes = "typst",
+      filetypes = {"typst"},
       settings = {
         exportPdf = "onSave",
       },

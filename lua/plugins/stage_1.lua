@@ -215,11 +215,10 @@ now(function()
     },
     fuzzy = {
       implementation = "rust",
-      prebuilt_binaries = { force_version = "v1.4.1" },
+      prebuilt_binaries = { force_version = "v1.9.1" },
       sorts = {
         function(a, b)
           if a.label:sub(1, 1) == "_" ~= a.label:sub(1, 1) == "_" then
-            -- return true to sort `a` after `b`, and vice versa
             return not a.label:sub(1, 1) == "_"
           end
           -- nothing returned, fallback to the next sort
@@ -262,7 +261,8 @@ now(function()
 
     -- server_opts.autostart = false
 
-    require("lspconfig")[server].setup(server_opts)
+    vim.lsp.config(server, server_opts)
+    vim.lsp.enable(server)
   end
 
   if string.match(path, "mason") then
