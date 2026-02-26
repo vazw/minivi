@@ -65,6 +65,7 @@ return {
 
     cssls = {},
     clangd = {
+      enabled = false,
       keys = {
         { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
       },
@@ -77,9 +78,9 @@ return {
           "meson.build",
           "meson_options.txt",
           "build.ninja"
-        )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
-          fname
-        ) or vim.fs.dirname(vim.fs.find(".git", { path = fname, upward = true })[1])
+        )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(fname) or vim.fs.dirname(
+          vim.fs.find(".git", { path = fname, upward = true })[1]
+        )
       end,
       capabilities = {
         offsetEncoding = { "utf-16" },
@@ -148,7 +149,7 @@ return {
               ["async-trait"] = { "async_trait" },
               ["napi-derive"] = { "napi" },
               ["async-recursion"] = { "async_recursion" },
-              leptos_macro = { "server", "component" },
+              -- leptos_macro = { "server", "component" },
             },
           },
           files = {
@@ -221,12 +222,13 @@ return {
 
     tinymist = {
       single_file_support = true,
-      filetypes = {"typst"},
+      filetypes = { "typst" },
       settings = {
         exportPdf = "onSave",
       },
     },
     typos_lsp = {
+      enabled = true,
       autostart = false,
       init_options = {
         config = "~/.config/typos.toml",

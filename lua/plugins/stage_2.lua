@@ -48,7 +48,7 @@ if ok_conform then
       graphql = { "prettierd", stop_after_first = true },
       markdown = { "markdown-toc", "prettierd" },
 
-      c = {},
+      c = { "clang-format" },
       rust = { "rustfmt", "leptosfmt" },
       -- You can use a function here to determine the formatters dynamically
       python = function(bufnr)
@@ -72,7 +72,7 @@ if ok_conform then
       quiet = true,
     },
     -- Set up format-on-save
-    format_on_save = false,
+    format_on_save = true,
     -- Customize formatters
     formatters = {
       shfmt = {
