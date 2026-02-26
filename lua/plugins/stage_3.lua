@@ -20,7 +20,7 @@ if have_autopair then
   autopair.setup()
 end
 local have_autotag, autotag = pcall(require, "nvim-ts-autotag")
-if have_autopair then
+if have_autotag then
   autotag.setup({
     opts = {
       -- Defaults
@@ -49,22 +49,154 @@ if have_fzf then
   vim.keymap.set("n", "sf", function()
     require("fzf-lua").files()
   end, { desc = "File File" })
+
   vim.keymap.set("n", "sF", function()
     -- require("fzf-lua").files({ cwd = vim.fn.getcwd() })
     require("fzf-lua").files({ cwd = vim.fn.expand("%:p:h") })
   end, { desc = "File File" })
+
+  -- vim.keymap.set("n", ";e", function()
+  --   require("fzf-lua").live_grep()
+  -- end, { desc = "Live Grep" })
+  --
   vim.keymap.set("n", ";r", function()
     require("fzf-lua").live_grep()
   end, { desc = "Live Grep" })
-  vim.keymap.set("n", ";;", function()
+
+  -- vim.keymap.set("n", ";r", function()
+  --   require("fzf-lua").live_grep({resume=true})
+  -- end, { desc = "Live Grep Resume" })
+  --
+  vim.keymap.set("n", ";e", function()
     require("fzf-lua").lsp_document_diagnostics()
   end, { desc = "Document Diagnostics" })
-  vim.keymap.set("n", ";e", function()
+
+  vim.keymap.set("n", ";;", function()
     require("fzf-lua").lsp_workspace_diagnostics()
   end, { desc = "Workspace Diagnostics" })
+
   vim.keymap.set("n", "<leader>ca", function()
     require("fzf-lua").lsp_code_actions()
   end, { desc = "Code Action", silent = true })
+
+  vim.keymap.set("n", ";q", function()
+    require("fzf-lua").lgrep_quickfix()
+  end, { desc = "Live Grep QuickFix", silent = true })
+
+  vim.keymap.set("n", ";b", function()
+    require("fzf-lua").buffers()
+  end, { desc = "Buffers" })
+
+  -- Custom Fzf Menu
+
+  local rules = {
+    Golang = {
+      Function = [[^func +(?:\([a-zA-Z0-9_]+ +\*?[a-zA-Z0-9_]+(?:\[.+\])?\))? *[A-Z][a-zA-Z0-9_]* -- !*test* ]],
+      Type = [[^type +[A-Z][a-zA-Z0-9_]+ -- !*test* ]],
+    },
+    Odin = {
+      Function = [[^[a-zA-Z0-9_]+ +:: +proc -- !*test* ]],
+      Type = [[^\w+ +:: +(?:struct|union|enum|distinct) -- !*test* ]],
+    },
+    Lua = {
+      Function = [[(?:function [a-zA-Z0-9_]+\(|[a-zA-Z0-9_]+ = function\(|= def\()]],
+    },
+    Rust = {
+      -- We don't filter by file extension because Rust API searches often target
+      -- individual files, unlike Go or Odin, where the package system makes it
+      -- more common to search the entire directory.
+      Function_and_Macro = [[(^\s*pub (const )?(unsafe )?fn +[a-zA-Z0-9_#]+|^\s*macro_rules! [a-zA-Z0-9_#]+|^impl )]],
+      Type = [[^\s*pub (?:struct|union|enum|trait|type) [a-zA-Z0-9_#]+]],
+    },
+  }
+
+  local parse_programming_language = function(path)
+    if path:match("%.go$") or path == "go.mod" then
+      return "Golang"
+    elseif path:match("%.odin$") then
+      return "Odin"
+    elseif path:match("%.lua$") then
+      return "Lua"
+    elseif path:match("%.rs$") or path:lower() == "cargo.toml" then
+      return "Rust"
+    end
+    return nil
+  end
+
+  local module_api_search = function(cwd)
+    local path = vim.api.nvim_buf_get_name(0)
+    local operation = fzf.grep
+
+    local programming_language = nil
+    if not path:match("^oil://.*") then
+      programming_language = parse_programming_language(path)
+    else
+      if not cwd then
+        cwd = vim.uv.cwd()
+      end
+      local handle = vim.uv.fs_scandir(cwd)
+      if handle then
+        while true do
+          local name, t = vim.uv.fs_scandir_next(handle)
+          if not name then
+            break
+          end
+          if t == "file" then
+            programming_language = parse_programming_language(name)
+            if programming_language then
+              break
+            end
+          end
+        end
+      end
+    end
+    if programming_language == nil then
+      fzf.live_grep()
+      return
+    else
+      if not path:match("^oil://.*") and (programming_language == "Rust" or programming_language == "Lua") then
+        operation = fzf.grep_curbuf
+      end
+      local items = {}
+      for item in pairs(rules[programming_language]) do
+        table.insert(items, item)
+      end
+      table.sort(items)
+      table.insert(items, "Any")
+      fzf.fzf_exec(items, {
+        prompt = string.format("Search Package (%s) > ", programming_language),
+        actions = {
+          ["default"] = function(selected, opts)
+            if selected == nil then
+              return
+            end
+            selected = selected[1]
+            if selected == "Any" then
+              fzf.live_grep()
+            else
+              operation({
+                search = rules[programming_language][selected],
+                no_esc = true,
+                -- Error: unable to init vim.regex
+                -- https://github.com/ibhagwan/fzf-lua/issues/1858#issuecomment-2689899556
+                -- The message is mostly informational, this happens due to the
+                -- previewer trying to convert the regex to vim magic pattern (in
+                -- order to highlight it), but not all cases can be covered so the
+                -- previewer will highlight the cursor column only (instead of the
+                -- entire pattern).
+                silent = true,
+              })
+            end
+          end,
+        },
+      })
+    end
+  end
+
+  vim.keymap.set("n", "<C-Space>", fzf.builtin, { desc = "fzf builtin" })
+  vim.keymap.set("n", "<leader>cd", function()
+    module_api_search(vim.fn.expand("%:p:h"))
+  end, { desc = "fzf api search" })
 end
 
 local miniclue = require("mini.clue")
