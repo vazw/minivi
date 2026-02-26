@@ -15,7 +15,7 @@ local function augroup(name)
 end
 local autocmd = vim.api.nvim_create_autocmd
 
-local next = next 
+local next = next
 
 -- Turn off paste mode when leaving insert
 autocmd("InsertLeave", {
@@ -134,16 +134,16 @@ autocmd("FileType", {
 })
 
 local function clear_lsp()
-    local to_stop = {}
-    for _, client in ipairs(vim.lsp.get_clients()) do
-      local lsp_attached = next(client.attached_buffers)
-      if lsp_attached == nil then
-        table.insert(to_stop, client)
-        -- vim.print("to stop: " .. client.name)
-      end
+  local to_stop = {}
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    local lsp_attached = next(client.attached_buffers)
+    if lsp_attached == nil then
+      table.insert(to_stop, client)
+      -- vim.print("to stop: " .. client.name)
     end
-    -- vim.print("To stop LSP: " .. vim.inspect(to_stop))
-    vim.lsp.stop_client(to_stop, true)
+  end
+  -- vim.print("To stop LSP: " .. vim.inspect(to_stop))
+  vim.lsp.stop_client(to_stop, true)
 end
 
 autocmd("BufDelete", {
@@ -170,6 +170,50 @@ autocmd({ "InsertLeave" }, {
   callback = function()
     if vim.snippet then
       vim.snippet.stop()
+    end
+  end,
+})
+
+autocmd("FileType", {
+  group = augroup("set Cargo"),
+  pattern = { "rust" },
+  callback = function()
+    vim.opt.makeprg = "cargo"
+  end,
+})
+
+local function jump_from_qf_custom()
+  local line = vim.api.nvim_get_current_line()
+
+  local path, row, col = line:match("([%w%d%._%-/]+):(%d+):(%d+)")
+  if not col then
+    col = 2
+  end
+
+  if path and row and col then
+    vim.cmd("wincmd p")
+    vim.cmd(string.format("edit +%s %s", row, path))
+    vim.api.nvim_win_set_cursor(0, { tonumber(row), tonumber(col) - 1 })
+  else
+    print("No valid file path:line:col found on this line.")
+  end
+end
+
+-- 5. Create the keymap specifically for Quickfix buffers
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    vim.keymap.set("v", "gf", jump_from_qf_custom, { buffer = true, desc = "Jump to location" })
+  end,
+})
+
+-- Prefer LSP folding if client supports it
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client:supports_method("textDocument/foldingRange") then
+      local win = vim.api.nvim_get_current_win()
+      vim.wo[win][0].foldexpr = "v:lua.vim.lsp.foldexpr()"
     end
   end,
 })

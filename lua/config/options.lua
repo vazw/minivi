@@ -11,7 +11,7 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
-vim.g.omni_sql_default_compl_type = 'syntax'
+vim.g.omni_sql_default_compl_type = "syntax"
 
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
@@ -22,14 +22,14 @@ vim.opt.hlsearch = true
 vim.opt.backup = false
 vim.opt.showcmd = true
 vim.opt.cmdheight = 1
-  -- 'laststatus' = 0	never a status line
-  -- 'laststatus' = 1	status line if there is more than one window
-  -- 'laststatus' = 2	always a status line
-  -- 'laststatus' = 3	have a global statusline at the bottom instead
-  -- 			of one for each window
+-- 'laststatus' = 0	never a status line
+-- 'laststatus' = 1	status line if there is more than one window
+-- 'laststatus' = 2	always a status line
+-- 'laststatus' = 3	have a global statusline at the bottom instead
+-- 			of one for each window
 vim.opt.laststatus = 2
 vim.opt.scrolloff = 5
-vim.opt.shell = "bash"
+vim.opt.shell = "zsh"
 vim.opt.relativenumber = true
 vim.opt.backupskip = { "/tmp/*", "/private/tmp/*" }
 vim.opt.inccommand = "split"
@@ -88,14 +88,6 @@ vim.opt.winblend = 0
 vim.opt.wildoptions = "pum"
 vim.opt.pumblend = 5
 
--- highlight yanked text for 200ms using the "Visual" highlight group
--- vim.cmd([[
--- augroup highlight_yank
--- autocmd!
--- au TextYankPost * silent! lua vim.highlight.on_yank({higroup="Visual", timeout=100})
--- augroup END
--- ]])
-
 -- Folding
 vim.o.foldenable = true
 vim.o.foldlevel = 99
@@ -105,15 +97,5 @@ vim.opt.foldcolumn = "0"
 vim.opt.fillchars:append({ fold = " " })
 -- Default to treesitter folding
 vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
--- Prefer LSP folding if client supports it
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client:supports_method("textDocument/foldingRange") then
-      local win = vim.api.nvim_get_current_win()
-      vim.wo[win][0].foldexpr = "v:lua.vim.lsp.foldexpr()"
-    end
-  end,
-})
 
 -- vim.diagnostic.opt.update_in_insert = true

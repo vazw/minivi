@@ -78,8 +78,10 @@ keymap.set({ "x", "o" }, "<C-c>", "gc", { remap = true })
 keymap.set("v", "<", "<gv")
 keymap.set("v", ">", ">gv")
 
--- Format
-vim.api.nvim_create_user_command("Format", ":lua vim.lsp.buf.format()", { desc = "Manual Format" })
+-- Formatter
+-- vim.api.nvim_create_user_command("Format", ":lua vim.lsp.buf.format()", { desc = "Manual Format" })
+-- conform
+vim.api.nvim_create_user_command("Format", ":lua require'conform'.formatexpr()", { desc = "Manual Format" })
 
 vim.api.nvim_create_user_command("InlayHint", function()
   vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
@@ -111,7 +113,7 @@ end, { desc = "Diagnostic" })
 keymap.set({ "n" }, "<c-/>", ":ToggleTerminal<CR>")
 keymap.set({ "t" }, "<c-/>", "<c-\\><c-n>:ToggleTerminal<CR>")
 
-keymap.set("n", "<leader>co", ":copen<cr>", {desc="copen after make"})
+keymap.set("n", "<leader>co", ":copen<cr>", { desc = "copen after make" })
 
 local tmux = vim.fn.getenv("TMUX")
 if tmux ~= nil then
